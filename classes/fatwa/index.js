@@ -3,6 +3,17 @@ const { decode } = require("iconv-lite");
 const { parseHTML } = require("linkedom");
 const IslamWebFatwa = require("./fatwa");
 
+/**
+ * بحث على الفتوى
+ * @param {string} query
+ * @param {object} options
+ * @param {"splitted_words" | "hole_words"} options.type نوع البحث كلمات متتالية او كلمات متبعثره
+ * @param {boolean} options.only_titles البحث في عنوان الفتوى ام في محتوى الفتوى
+ * @param {number} options.start بدأ الفتوى - للصفحات استخدم next_page
+ * @param {boolean} options.fullFetch بحث عميق؟ الحصول على الفتوى على {@link IslamWebFatwa}
+ * @param {boolean} options.html الحصول على المحتوى كhtml
+ * @returns {Promise<{ fatwas: IslamWebFatwa[], next_page: number }|{ fatwas: { title: string, url: string, fatwa_number: number }[], next_page: number }>}
+ */
 async function search(query, options = {}) {
   if (!query) throw new Error("Query is required");
   if (!options.type) options.type = "splitted_words";
@@ -82,6 +93,11 @@ async function search(query, options = {}) {
   };
 }
 
+/**
+ * الحصول على الفتوى والمقترحات من على صفحة الفتوى الرئيسية
+ * @param {boolean} fullFetch بحث عميق - حصول على {@link IslamWebFatwa}
+ * @returns {Promise<{ top: IslamWebFatwa[] | { title: string, url: string, fatwa_number: number }[], news: IslamWebFatwa[] | { title: string, url: string, fatwa_number: number, short_content: string }[], fatwa_subjects: { name: string, url: string }[], most_view: { title: string, url: string, views: number, category: { name: string, url: string } }[] }>}
+ */
 async function homepage(fullFetch = false) {
   let { data: html } = await axios.get("https://www.islamweb.net/ar/fatwa/");
   let document = parseHTML(html).window.document;
@@ -213,6 +229,12 @@ async function homepage(fullFetch = false) {
   };
 }
 
+/**
+ *
+ * @param {string} url رابط مجموعة الفتوى
+ * @param {boolean} fullFetch  بحث عميق
+ * @returns {Promise<{fatwas: IslamWebFatwa[] | { title: string, url: string, fatwa_number: number, short_content: string }[], folders: {name: string, url: string}[], sub_sections: { title: string, url: string}[], pages: { previous: string, current: number, next: string, last: number }}>}
+ */
 async function get_fatawa(url, fullFetch = false) {
   if (!url) throw new Error("Url is Required");
   let { data: html } = await axios.get(url);
@@ -319,6 +341,11 @@ async function get_fatawa(url, fullFetch = false) {
   };
 }
 
+/**
+ * الحصول على كامل معلومات الفتوى
+ * @param {string} url 
+ * @returns {Promise<IslamWebFatwa>}
+ */
 async function get_fatwa(url) {
   if (!url) throw new Error("Url is required");
   let { data: html } = await axios.get(url);

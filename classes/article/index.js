@@ -3,6 +3,17 @@ const { parseHTML } = require("linkedom");
 const IslamWebArticle = require("./article");
 const iconv_lite = require("iconv-lite");
 
+/**
+ * بحث على المقالات
+ * @param {string} query
+ * @param {object} options
+ * @param {"splitted_words" | "hole_words"} options.type نوع البحث كلمات متتالية او كلمات متبعثره
+ * @param {boolean} options.only_titles البحث في عنوان المقالة ام في محتوى المقالة
+ * @param {number} options.start بدأ المقالات - للصفحات استخدم next_page
+ * @param {boolean} options.fullFetch بحث عميق؟ الحصول على مقالات على {@link IslamWebArticle}
+ * @param {boolean} options.html الحصول على المحتوى كhtml
+ * @returns {Promise<{ articles: IslamWebArticle[], next_page: number }|{ articles: { title: string, url: string, article_number: number }[], next_page: number }>}
+ */
 async function search(query, options = {}) {
   if (!query) throw new Error("Query is Required");
   if (!options.type) options.type = "splitted_words";
@@ -99,6 +110,10 @@ async function search(query, options = {}) {
   }
 }
 
+/**
+ * الحصول على المقالات والمقترحات من على صفحة المقالات الرئيسية
+ * @returns {Promise<{suggested: { title: string, url: string, image: string, short_content: string, category: string }[],top: { title: string, url: string, image: string, short_content: string }[], editor_pick: { title: string, url: string, image: string, category: string }[], new_articles: { title: string, url: string, image: string, category: string }[], todays_article: { title: string, url: string, image: string, category: { name: string, url: string } }, sub_sections: { title: string, url: string }[]}>}
+ */
 async function homepage() {
   let { data: html } = await axios.get("https://islamweb.net/ar/articles/");
   let document = parseHTML(html).window.document;
@@ -215,6 +230,13 @@ async function homepage() {
   };
 }
 
+
+/**
+ * 
+ * @param {string} url رابط مجموعة المقالات
+ * @param {boolean} fullFetch بحث عميق
+ * @returns {Promise<folders: { name: string, url: string }[], articles: IslamWebArticle[] | { title: string, url: string, article_number: number, publish: Date, short_content: string }[], sub_sections: { title: string, url: string }[], pages: { previous: string, current: number, next: string, last: number }>}
+ */
 async function get_articles(url, fullFetch = false) {
   if (!url) throw new Error("Url is Required");
   let { data: html } = await axios.get(url);
@@ -321,6 +343,11 @@ async function get_articles(url, fullFetch = false) {
   };
 }
 
+/**
+ * الحصول على كامل معلومات المقالة
+ * @param {string} url 
+ * @returns {Promise<IslamWebArticle>}
+ */
 async function get_article(url) {
   if (!url) throw new Error("Url is required");
   let { data: html } = await axios.get(url);

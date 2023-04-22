@@ -10,6 +10,10 @@ const isEmail = require("email-regex-safe");
 const { execSync } = require("child_process");
 
 module.exports = class IslamWebConsult {
+  /**
+   * كلاس للضغط المعلومات من على كود صفحة الإستشارة
+   * @param {string} html كود صفحة الإستشارة
+   */
   constructor(html) {
     this.source = html
       .replace(/\<font color="green"/gi, '<font color="#80e36a"')
@@ -17,6 +21,11 @@ module.exports = class IslamWebConsult {
       .replace(/\<font color="blue"/gi, '<font color="#1E90FF"');
   }
 
+  /**
+   * الحصول على جميع معلومات الإستشارة
+   * @param {string} html محتوى الإستشارة نص عادي ام html
+   * @returns { title: string | undefined, author: string | undefined, tree: string | undefined, publish: Date | undefined, consult_question: string | undefined, consult_number: number | undefined, related: { [key: string]: { title: string, url: string, short_url: string, img: string, type: string, number: number } }, language: string | undefined, consult_answer: string | undefined, comments: { comment: string, author: string, author_country: string }[] | undefined }
+   */
   getDetails(html = false) {
     let document = parseHTML(this.source).window.document;
     let language =
@@ -153,6 +162,16 @@ module.exports = class IslamWebConsult {
     };
   }
 
+  /**
+   * طباعة محتوى الإستشارة الى ملف pdf
+   * @param {object} param0
+   * @param {Boolean} param0.headersAndFooters اضافة عناوين ورابط الإستشارة؟
+   * @param {Number} param0.margin المساحة المفرغة بين النصوص
+   * @param {"A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" | "B0" | "B1" | "B2" | "B3" | "B4" | "B5" | "B6" | "B7" | "B8" | "B9" | "C5E" | "Comm10E" | "DLE" | "Executive" | "Folio" | "Ledger" | "Legal" | "Letter" | "Tabloid"} param0.size حجم وشكل الملف المطبوع
+   * @param {"Portrait" | "Landscape"} param0.orientation شكل الصفحة بالطول او العرض
+   * @param {string} param0.executablePath مسار برنامج الطبع (wkhtmltopdf)
+   * @returns {Promise<Buffer>}
+   */
   async print(
     {
       headersAndFooter: headersAndFooters,
@@ -216,6 +235,11 @@ module.exports = class IslamWebConsult {
     });
   }
 
+  /**
+   * رابط نشر على الوتس اب او التويتر او ايميل
+   * @param {"whatsapp"|"twitter"|string} media
+   * @returns {string}
+   */
   share(media = "whatsapp") {
     let d = this.getDetails();
     if (media === "whatsapp") {

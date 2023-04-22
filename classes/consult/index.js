@@ -3,6 +3,17 @@ const { decode } = require("iconv-lite");
 const { parseHTML } = require("linkedom");
 const IslamWebConsult = require("./consult");
 
+/**
+ * بحث على الإستشارات
+ * @param {string} query
+ * @param {object} options
+ * @param {"splitted_words" | "hole_words"} options.type نوع البحث كلمات متتالية او كلمات متبعثره
+ * @param {boolean} options.only_titles البحث في عنوان الإستشارة ام في محتوى الإستشارة
+ * @param {number} options.start بدأ الإستشارات - للصفحات استخدم next_page
+ * @param {boolean} options.fullFetch بحث عميق؟ الحصول على الإستشارات على {@link IslamWebConsult}
+ * @param {boolean} options.html الحصول على المحتوى كhtml
+ * @returns {Promise<{ consults: IslamWebConsult[], next_page: number }|{ consults: { title: string, url: string, consult_number: number }[], next_page: number }>}
+ */
 async function search(query, options = {}) {
   if (!query) throw new Error("Query is required");
   if (!options.type) options.type = "splitted_words";
@@ -19,9 +30,12 @@ async function search(query, options = {}) {
       R1,
       txt: query,
       start: options.start,
-    }, { responseType: options.fullFetch ? `text` : 'arraybuffer' }
+    },
+    { responseType: options.fullFetch ? `text` : "arraybuffer" }
   );
-  let document = parseHTML(options.fullFetch ? res.data : decode(res.data, 'windows-1256')).window.document;
+  let document = parseHTML(
+    options.fullFetch ? res.data : decode(res.data, "windows-1256")
+  ).window.document;
 
   let next_page = document
     .querySelectorAll("option")
@@ -64,7 +78,9 @@ async function search(query, options = {}) {
             ? `https://islamweb.net${el.querySelector("a").href}`
             : undefined;
           if (!url) return undefined;
-          let title = el.querySelector("a")?.[options.html ? 'innerHTML' : 'textContent']?.trim();
+          let title = el
+            .querySelector("a")
+            ?.[options.html ? "innerHTML" : "textContent"]?.trim();
           return {
             title,
             url,
@@ -78,6 +94,11 @@ async function search(query, options = {}) {
   };
 }
 
+/**
+ * الحصول على الإستشارات والمقترحات من على صفحة الإستشارات الرئيسية
+ * @param {boolean} fullFetch بحث عميق - حصول على {@link IslamWebConsult}
+ * @returns {Promise<{ top: { title: string, url: string, consult_number: number }[], consult_subjects: { title: string, url: string }[], most_view: { title: string, url: string, views: number, category: { name: string, url: string } }[] }>}
+ */
 async function homepage(fullFetch = false) {
   let { data: html } = await axios.get("https://www.islamweb.net/ar/consult/");
   let document = parseHTML(html).window.document;
@@ -103,7 +124,7 @@ async function homepage(fullFetch = false) {
       : undefined;
     if (!url) continue;
     let title = element.querySelector("a h2")?.textContent?.trim();
-    let consult_number = +element.querySelector('a')?.href.split("/")?.[3];
+    let consult_number = +element.querySelector("a")?.href.split("/")?.[3];
     top.push({ title, url, consult_number });
   }
 
@@ -170,6 +191,12 @@ async function homepage(fullFetch = false) {
   };
 }
 
+/**
+ *
+ * @param {string} url رابط مجموعة الإستشارات
+ * @param {boolean} fullFetch  بحث عميق
+ * @returns {Promise<{consults: IslamWebConsult[] | { title: string, url: string, consult_number: number, short_content: string }[], folders: {name: string, url: string}[], pages: { previous: string, current: number, next: string, last: number }}>}
+ */
 async function get_consults(url, fullFetch = false) {
   if (!url) throw new Error("Url is required");
   let { data: html } = await axios.get(url);
@@ -276,6 +303,11 @@ async function get_consults(url, fullFetch = false) {
   };
 }
 
+/**
+ * الحصول على كامل معلومات الإستشارة
+ * @param {string} url
+ * @returns {Promise<IslamWebConsult>}
+ */
 async function get_consult(url) {
   if (!url) throw new Error("Url is required");
   let { data: html } = await axios.get(url);

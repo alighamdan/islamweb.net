@@ -13,7 +13,8 @@ const iconv_lite = require("iconv-lite");
 
 module.exports = class IslamWebLibrary {
   /**
-   * @param {string} html
+   * كلاس للضغط المعلومات من على كود الصفحة
+   * @param {string} html كود الصفحة 
    */
   constructor(html) {
     this.source = html
@@ -22,6 +23,11 @@ module.exports = class IslamWebLibrary {
       .replace(/\<font color="blue"/gi, '<font color="#1E90FF"');
   }
 
+  /**
+   * الحصول على جميع معلومات الصفحة
+   * @param {string} html محتوى الصفحة نص عادي ام html
+   * @returns { title: string | undefined, thumbnail: string | undefined, author: string | undefined, category: { name: string, link: string } | undefined, tree: string | undefined, publish: Date | undefined, article_content: string | undefined, article_number: number | undefined, related: { [key: string]: { title: string, url: string, short_url: string, img: string, type: string, number: number } }, language: string | undefined }
+   */
   getDetails(html = false, tashkel = true) {
     let document = parseHTML(this.source).window.document;
     let language =
@@ -139,6 +145,16 @@ module.exports = class IslamWebLibrary {
     };
   }
 
+  /**
+   * طباعة محتوى الصفحة الى ملف pdf
+   * @param {object} param0 
+   * @param {Boolean} param0.headersAndFooters اضافة عناوين ورابط الصفحة؟
+   * @param {Number} param0.margin المساحة المفرغة بين النصوص
+   * @param {"A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9" | "B0" | "B1" | "B2" | "B3" | "B4" | "B5" | "B6" | "B7" | "B8" | "B9" | "C5E" | "Comm10E" | "DLE" | "Executive" | "Folio" | "Ledger" | "Legal" | "Letter" | "Tabloid"} param0.size حجم وشكل الملف المطبوع 
+   * @param {"Portrait" | "Landscape"} param0.orientation شكل الصفحة بالطول او العرض
+   * @param {string} param0.executablePath مسار برنامج الطبع (wkhtmltopdf)
+   * @returns {Promise<Buffer>}
+   */
   async print(
     {
       headersAndFooter: headersAndFooters,
@@ -216,7 +232,11 @@ module.exports = class IslamWebLibrary {
       maxBuffer: 99999999999999999999,
     });
   }
-
+  /**
+   * رابط نشر على الوتس اب او التويتر او ايميل
+   * @param {"whatsapp"|"twitter"|string} media 
+   * @returns {string} 
+   */
   share(media = "whatsapp") {
     let { title } = this.getDetails();
     if (media === "whatsapp") {

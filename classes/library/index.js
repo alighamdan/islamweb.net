@@ -3,6 +3,17 @@ const { parseHTML } = require("linkedom");
 const iconv_lite = require("iconv-lite");
 const IslamWebLibrary = require("./library");
 
+/**
+ * بحث على صفحات
+ * @param {string} query
+ * @param {object} options
+ * @param {"splitted_words" | "hole_words"} options.type نوع البحث كلمات متتالية او كلمات متبعثره
+ * @param {boolean} options.only_titles البحث في عنوان الصفحة ام في محتوى الصفحة
+ * @param {number} options.start بدأ الصفحات - للصفحات استخدم next_page
+ * @param {boolean} options.fullFetch بحث عميق؟ الحصول على الصفحات على {@link IslamWebLibrary}
+ * @param {boolean} options.html الحصول على المحتوى كhtml
+ * @returns {Promise<{ tabs: IslamWebLibrary[], next_page: number }|{ tabs: { bookName: string, url: string, short_content: string, category: string, book_id: string, tab_id: string }[], next_page: number }>}
+ */
 async function search(query, options = {}) {
   if (!query) throw new Error("query is required");
   if (!options.type) options.type = "splitted_words";
@@ -91,6 +102,10 @@ async function search(query, options = {}) {
   return { tabs, next_page };
 }
 
+/**
+ * الحصول على جميع الكتب الموجودة على الموقع
+ * @returns {Promise<{ bookName: string, bookId: string, url: string, Pages: number, author: string, subject: string }[]>}
+ */
 async function get_books() {
   let { data: html } = await axios.get(
     "https://www.islamweb.net/ar/library/index.php?page=bookslist"
@@ -126,6 +141,10 @@ async function get_books() {
   });
 }
 
+/**
+ * الحصول على الصفحات والمقترحات من على صفحة المكتبة الرئيسية
+ * @returns {Promise<{suggested_books: { bookName: string, bookId: string, url: string, img: string, author: string }[], selected_tabs: { title: string, url: string, tab_id: string, book: { name: string, url: string, id: string }, author: string, short_content: string }[], imams: { name: string, url: string, short_content: string }[]}>}
+ */
 async function homepage() {
   let { data: html } = await axios.get("https://www.islamweb.net/ar/library/");
   let document = parseHTML(html).window.document;
@@ -203,6 +222,12 @@ async function homepage() {
   };
 }
 
+/**
+ *
+ * @param {string} url رابط مجموعة الصفحات
+ * @param {boolean} fullFetch بحث عميق
+ * @returns {Promise<folders: { name: string, url: string }[], tabs: { title: string, url: string, bookId: string, tabId: string, tree: string }[], pages: { previous: string, current: number, next: string, last: number }>}
+ */
 async function get_tabs(url) {
   if (!url)
     url = "https://www.islamweb.net/ar/library/index.php?page=TreeCategory";
@@ -278,9 +303,14 @@ async function get_tabs(url) {
   };
 }
 
+/**
+ * الحصول على كامل معلومات الصفحة
+ * @param {string} url 
+ * @returns {Promise<IslamWebLibrary>}
+ */
 async function get_tab(url) {
-  if (!url) throw new Error("Url is required")
-  let { data:html } = await axios.get(url);
+  if (!url) throw new Error("Url is required");
+  let { data: html } = await axios.get(url);
   return new IslamWebLibrary(html);
 }
 
