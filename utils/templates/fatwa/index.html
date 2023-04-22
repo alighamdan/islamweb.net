@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Tajawal&display=swap");
+      * {
+        margin: 0;
+        direction: "{DIRECTION}";
+        font-size: 20px;
+        font-family: "Tajawal";
+        box-sizing: border-box;
+      }
+
+      html {
+        background-color: rgb(22, 22, 22);
+        color: rgb(235, 235, 235);
+      }
+      div.question,
+      div.answer {
+        padding: 30px;
+      }
+
+      hr {
+        height: 3px;
+        background-color: black;
+        border-color: black;
+      }
+      .swal, .ajabh {
+        padding: 15px 30px;
+        background-color: crimson;
+        color: white;
+        width: 150px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="swal">سؤال</h2>
+    <div class="question">{QUESTION}</div>
+    <hr />
+    <h2 class="ajabh">جواب</h2>
+    <div class="answer">{ANSWER}</div>
+  </body>
+</html>
