@@ -226,7 +226,7 @@ async function homepage() {
  *
  * @param {string} url رابط مجموعة الصفحات
  * @param {boolean} fullFetch بحث عميق
- * @returns {Promise<folders: { name: string, url: string }[], tabs: { title: string, url: string, bookId: string, tabId: string, tree: string }[], pages: { previous: string, current: number, next: string, last: number }>}
+ * @returns {Promise<{folders: { name: string, url: string }[], tabs: { title: string, url: string, bookId: string, tabId: string, tree: string }[], pages: { previous: string, current: number, next: string, last: number }}>}
  */
 async function get_tabs(url) {
   if (!url)

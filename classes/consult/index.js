@@ -97,7 +97,7 @@ async function search(query, options = {}) {
 /**
  * الحصول على الإستشارات والمقترحات من على صفحة الإستشارات الرئيسية
  * @param {boolean} fullFetch بحث عميق - حصول على {@link IslamWebConsult}
- * @returns {Promise<{ top: { title: string, url: string, consult_number: number }[], consult_subjects: { title: string, url: string }[], most_view: { title: string, url: string, views: number, category: { name: string, url: string } }[] }>}
+ * @returns {Promise<{ top: IslamWebConsult[] | { title: string, url: string, consult_number: number }[], consult_subjects: { title: string, url: string }[], most_view: { title: string, url: string, views: number, category: { name: string, url: string } }[] }>}
  */
 async function homepage(fullFetch = false) {
   let { data: html } = await axios.get("https://www.islamweb.net/ar/consult/");

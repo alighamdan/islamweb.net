@@ -235,7 +235,7 @@ async function homepage() {
  * 
  * @param {string} url رابط مجموعة المقالات
  * @param {boolean} fullFetch بحث عميق
- * @returns {Promise<folders: { name: string, url: string }[], articles: IslamWebArticle[] | { title: string, url: string, article_number: number, publish: Date, short_content: string }[], sub_sections: { title: string, url: string }[], pages: { previous: string, current: number, next: string, last: number }>}
+ * @returns {Promise<{folders: { name: string, url: string }[], articles: IslamWebArticle[] | { title: string, url: string, article_number: number, publish: Date, short_content: string }[], sub_sections: { title: string, url: string }[], pages: { previous: string, current: number, next: string, last: number }}>}
  */
 async function get_articles(url, fullFetch = false) {
   if (!url) throw new Error("Url is Required");
