@@ -1,13 +1,22 @@
 {
   "name": "islamweb.net",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "unOfficial islamweb.net API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "islamweb"
+    "islamweb",
+    "islamweb.net",
+    "islam",
+    "library",
+    "fatwa",
+    "article",
+    "consult",
+    "اسلام",
+    "إسلام",
+    "مسلم"
   ],
   "author": "ali YE",
   "license": "MIT",
@@ -17,5 +26,14 @@
     "iconv-lite": "^0.6.3",
     "linkedom": "^0.14.25",
     "re2": "^1.18.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alighamdan/islamweb.net.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alighamdan/islamweb.net/issues"
+  },
+  "homepage": "https://github.com/alighamdan/islamweb.net#readme"
 }
